@@ -1,0 +1,44 @@
+.revision-session-marks-modal {
+  width: min(760px, 94vw);
+}
+
+.revision-session-marks-modal .revision-prose {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 40vh;
+  overflow: auto;
+  padding: 18px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  font-family: var(--font-text);
+  font-size: var(--font-text-size);
+  line-height: 1.7;
+}
+
+.revision-session-marks-modal .revision-markup {
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-medium);
+}
+
+.revision-session-marks-modal .revision-proofs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.revision-session-marks-modal .revision-proof {
+  color: var(--text-success);
+  padding: 6px 10px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+}
+
+.revision-session-marks-modal .revision-muted {
+  color: var(--text-muted);
+}
+
+.revision-session-marks-modal .revision-message {
+  color: var(--text-accent);
+}
