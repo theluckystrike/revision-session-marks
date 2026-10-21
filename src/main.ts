@@ -6,6 +6,8 @@ import { makeReview, validateProse, type Review } from './review';
 import { DEFAULT_SETTINGS, assertMatch, folderOf, loadState, type Baseline, type StoredState } from './state';
 import { RevisionSessionMarksSettingTab } from './settings';
 import { ReviewModal, SessionModal } from './ui';
+import { setupHello } from './hello/index';
+import WHATS_NEW from './whats-new.json';
 
 export default class RevisionSessionMarksPlugin extends Plugin {
 	settings = { ...DEFAULT_SETTINGS };
@@ -17,6 +19,8 @@ export default class RevisionSessionMarksPlugin extends Plugin {
 	private modal: ReviewModal | SessionModal | null = null;
 
 	async onload(): Promise<void> {
+		// First: "What's new" reads its state before the settings load (packages/hello). It does not wait.
+		setupHello(this, WHATS_NEW);
 		await this.loadSettings();
 		const pro = createGitHubSponsors(this.app, this.manifest.id, SPONSORS, this);
 		pro.init();

@@ -80,6 +80,8 @@ The file path and creation time must match the saved baseline. A rename or delet
 
 ## Settings
 
+After a minor or major update, this plugin opens one What's new tab in the background. The tab and settings card suggest other NoteMods plugins and Zovo Chat and link to notemods.com for feedback ([privacy](https://notemods.com/privacy/)). The tab sends no data. Turn the tab off in Settings.
+
 The settings tab has the selected baseline name, optional author label, change summary toggle and GitHub Sponsors controls. The default name is “First draft”. The author label starts empty and the summary starts off. These three output options need Pro. The author label is limited to 80 characters and cannot contain braces, angle brackets or line ends.
 
 ## FAQ
