@@ -1,6 +1,6 @@
-import { PluginSettingTab, type SettingDefinitionItem } from 'obsidian';
+import { PluginSettingTab, type Notice, type SettingDefinitionItem } from 'obsidian';
 import { sponsorsSettingItems } from './license/github-obsidian';
-import { PRO_UI } from './pro';
+import { PRO_NAMED, PRO_STYLE, PRO_UI, isPro, proNotice } from './pro';
 import type RevisionSessionMarksPlugin from './main';
 import { helloSettingItems } from './hello/settings';
 
@@ -19,7 +19,30 @@ export class RevisionSessionMarksSettingTab extends PluginSettingTab {
 			...(this.plugin.pro ? sponsorsSettingItems(this.plugin.pro, PRO_UI) : []),
 		];
 	}
+	/** The last Pro notice of this tab. A second notice does not show while it is open. */
+	private notice: Notice | null = null;
+
+	getControlValue(key: string): unknown {
+		// A free user sees the values in effect without Pro. The stored choice stays for the time that Pro comes back.
+		if (!isPro()) {
+			if (key === 'baselineName') return 'First draft';
+			if (key === 'author') return '';
+			if (key === 'includeSummary') return false;
+		}
+		return super.getControlValue(key);
+	}
+
 	async setControlValue(key: string, value: unknown): Promise<void> {
+		const lead = key === 'baselineName' ? PRO_NAMED : key === 'author' || key === 'includeSummary' ? PRO_STYLE : null;
+		if (lead && !isPro()) {
+			// A free user selected a Pro setting: tell how to get Pro and save nothing. Move the focus out, then draw the
+			// tab again, so the control shows the value in effect (Obsidian does not draw a focused control again).
+			if (!this.notice?.messageEl.isConnected) this.notice = proNotice(lead);
+			const active = this.containerEl.ownerDocument.activeElement as HTMLElement | null;
+			if (active && this.containerEl.contains(active)) active.blur();
+			this.update();
+			return;
+		}
 		if ((key === 'baselineName' || key === 'author') && typeof value === 'string') this.plugin.settings[key] = value.slice(0, 80);
 		if (key === 'includeSummary' && typeof value === 'boolean') this.plugin.settings.includeSummary = value;
 		await this.plugin.saveSettings();

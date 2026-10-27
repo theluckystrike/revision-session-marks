@@ -1,7 +1,6 @@
 {
 	"name": "revision-session-marks",
-	"repository": {"type": "git", "url": "theluckystrike/revision-session-marks.git"},
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"private": true,
 	"description": "Save a writing baseline and turn later edits into a new CriticMarkup review note.",
 	"main": "main.js",

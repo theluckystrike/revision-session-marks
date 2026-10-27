@@ -1,7 +1,7 @@
 import { Notice, Plugin, TFile, normalizePath, type Editor } from 'obsidian';
 import type { SponsorsManager } from './license/index';
 import { createGitHubSponsors } from './license/github-obsidian';
-import { SPONSORS, bindPro, isPro, resetPro } from './pro';
+import { PRO_FOLDER, PRO_NAMED, SPONSORS, bindPro, isPro, proNotice, resetPro, proText } from './pro';
 import { makeReview, validateProse, type Review } from './review';
 import { DEFAULT_SETTINGS, assertMatch, folderOf, loadState, type Baseline, type StoredState } from './state';
 import { RevisionSessionMarksSettingTab } from './settings';
@@ -32,9 +32,9 @@ export default class RevisionSessionMarksPlugin extends Plugin {
 		this.register(() => this.modal?.close());
 		this.addEditorCommand('start-session', 'Start a writing session', (file, text) => this.startSession(file, text));
 		this.addEditorCommand('stop-session', 'Stop session and create a review note', (file, text) => this.stopSession(file, text));
-		this.addEditorCommand('save-named-baseline', 'Save a named baseline (Pro)', (file, text) => this.saveNamed(file, text));
-		this.addEditorCommand('review-named-baseline', 'Create a named baseline review (Pro)', (file, text) => this.reviewNamed(file, text));
-		this.addEditorCommand('review-folder', 'Create folder reviews (Pro)', (file, text) => this.reviewFolder(file, text));
+		this.addEditorCommand('save-named-baseline', 'Save a named baseline (Pro)', (file, text) => this.saveNamed(file, text), PRO_NAMED);
+		this.addEditorCommand('review-named-baseline', 'Create a named baseline review (Pro)', (file, text) => this.reviewNamed(file, text), PRO_NAMED);
+		this.addEditorCommand('review-folder', 'Create folder reviews (Pro)', (file, text) => this.reviewFolder(file, text), PRO_FOLDER);
 		this.addEditorCommand('remove-named-baseline', 'Remove the selected named baseline', (file) => this.removeNamed(file));
 		this.addCommand({ id: 'show-session', name: 'Show session and baselines', callback: () => this.showSession() });
 		this.addCommand({ id: 'remove-invalid-baselines', name: 'Remove invalid named baselines', callback: () => this.run(() => this.removeInvalid()) });
@@ -49,8 +49,11 @@ export default class RevisionSessionMarksPlugin extends Plugin {
 
 	onunload(): void { resetPro(); }
 
-	private addEditorCommand(id: string, name: string, action: (file: TFile, text: string) => Promise<unknown>): void {
+	/** proLead marks a Pro command: a free user gets the shared Pro notice and the action does not run. */
+	private addEditorCommand(id: string, name: string, action: (file: TFile, text: string) => Promise<unknown>, proLead?: string): void {
 		this.addCommand({ id, name, editorCallback: (editor: Editor, ctx) => {
+			// The session window shows the same text as its last message.
+			if (proLead && !isPro()) { this.lastMessage = proText(proLead); proNotice(proLead); return; }
 			const file = ctx.file;
 			const text = editor.getValue();
 			return this.run(async () => {
@@ -112,7 +115,7 @@ export default class RevisionSessionMarksPlugin extends Plugin {
 	}
 
 	private needPro(): void {
-		if (!isPro()) throw new Error('This feature needs Pro. Sponsor on GitHub, then sign in from the plugin settings.');
+		if (!isPro()) throw new Error(proText('This feature needs Pro.'));
 	}
 
 	private review(b: Baseline, text: string): Review {

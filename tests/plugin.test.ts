@@ -19,7 +19,7 @@ function fixture(files: Record<string, string> = { 'Drafts/A.md': 'We go.', 'Dra
 	const file = (path = 'Drafts/A.md') => app.vault.getAbstractFileByPath(path) as unknown as TFile;
 	return { app, p, file, disk: () => disk };
 }
-function pro(value = true) { bindPro({ isPro: () => value, onChange: () => () => undefined } as never); }
+function pro(value = true) { bindPro({ isPro: () => value, getState: () => ({ status: 'signed-out', lastAttemptAt: 0 }), hasToken: () => false, config: { sponsorLogin: 'theluckystrike' }, onChange: () => () => undefined } as never); }
 
 describe('Free session transaction', () => {
 	it('loads defaults and stays free', async () => {
@@ -245,6 +245,8 @@ describe('Pro baselines and folder preflight', () => {
 	});
 	it('setting changes preserve the baseline on disk', async () => {
 		const { p, app, file, disk } = fixture();
+		// The author label is a Pro setting: a free user cannot save it (tests/pro-notice.test.ts).
+		pro();
 		await p.startSession(file(), 'We go.');
 		const tab = new RevisionSessionMarksSettingTab(app as never, p);
 		await tab.setControlValue('author', 'Sam');
