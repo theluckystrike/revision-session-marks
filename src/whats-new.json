@@ -1,9 +1,10 @@
 {
 	"id": "revision-session-marks",
 	"name": "Revision Session Marks",
-	"version": "1.1.1",
+	"version": "1.1.2",
 	"changes": [
-		"The three Pro commands and the Pro settings now show how to get Pro, with a Sponsor on GitHub button. Nothing runs or is saved until Pro is on."
+		"When the settings refuse a Pro choice, for example in Change summary (Pro), the keyboard focus now stays on that setting.",
+		"In a text field the focus leaves the field, as before."
 	],
 	"tip": "Run Show session and baselines to see the saved text and check which draft the baseline belongs to.",
 	"thanks": "Hi, I am Michael, a solo developer in Poland. Revision Session Marks is one of over 100 small plugins that I make. Thank you for using it with your writing.",
